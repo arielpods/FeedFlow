@@ -66,6 +66,13 @@
                                                     Supprimer
                                                 </button>
                                             </form>
+                                            
+                                            <form method="GET" action="{{ route('organizations.members.index', $organization->id) }}">
+                                               
+                                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                                    Members
+                                                </button>
+                                            </form>
                                         @endcan
                                     </div>
                                 </div>

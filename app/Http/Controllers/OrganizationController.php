@@ -84,7 +84,7 @@ class OrganizationController extends Controller
             
         }
 
-        return Redirect::route('organizations.index')->with('status', 'member-invited');
+        return Redirect::route('organizations.members.index', $organization->id)->with('status', 'member-invited');
     }
 
     public function removeMember(Request $request, Organization $organization, User $user): RedirectResponse
@@ -93,7 +93,19 @@ class OrganizationController extends Controller
 
         $organization->members()->detach($user->id);
 
-        return Redirect::route('organizations.index')->with('status', 'member-removed');
+        return Redirect::route('organizations.members.index', $organization->id)->with('status', 'member-removed');
+    }
+
+    public function members(Request $request, Organization $organization): View
+    {
+        $this->authorize('view', $organization);
+
+        $members = $organization->members()->get();
+
+        return view('organizations.members.index', [
+            'organization' => $organization,
+            'members' => $members,
+        ]);
     }
 
     public function switch(Request $request): RedirectResponse

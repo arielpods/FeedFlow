@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/organizations', 'store')->name('organizations.store');
         Route::patch('/organizations/{organization}', 'update')->name('organizations.update');
         Route::delete('/organizations/{organization}', 'destroy')->name('organizations.destroy');
+        
+        Route::get('/organizations/{organization}/members', 'members')->name('organizations.members.index');
         Route::post('/organizations/{organization}/members', 'inviteMember')->name('organizations.members.store');
         Route::delete('/organizations/{organization}/members/{user}', 'removeMember')->name('organizations.members.destroy');
         Route::post('/organizations/switch', 'switch')->name('organizations.switch');
