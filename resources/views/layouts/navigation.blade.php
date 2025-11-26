@@ -16,6 +16,59 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
+
+                @php
+                    $navOrganizations = collect(optional(Auth::user())->organizations ?? []);
+                    $activeOrganizationId = session('current_organization_id');
+                    $currentOrganization = $navOrganizations->firstWhere('id', $activeOrganizationId) ?? $navOrganizations->first();
+                @endphp
+
+                @if($navOrganizations->isNotEmpty())
+                    <div class="hidden sm:-my-px sm:ms-6 sm:flex">
+                        <x-dropdown align="left" width="56">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-600 bg-gray-100 hover:text-gray-800 focus:outline-none transition ease-in-out duration-150">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-semibold text-gray-700">
+                                            {{ $currentOrganization->name ?? __('Organisation') }}
+                                        </span>
+                                        <span class="text-xs text-gray-500">
+                                            {{ __('actif') }}
+                                        </span>
+                                    </div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                @foreach($navOrganizations as $organization)
+                                    <form method="POST" action="{{ route('organizations.switch') }}">
+                                        @csrf
+                                        <input type="hidden" name="organization_id" value="{{ $organization->id }}">
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between {{ optional($currentOrganization)->id === $organization->id ? 'bg-gray-50 font-semibold' : '' }}">
+                                            <span>{{ $organization->name }}</span>
+                                            @if(optional($currentOrganization)->id === $organization->id)
+                                                <svg class="h-4 w-4 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            @endif
+                                        </button>
+                                    </form>
+                                @endforeach
+
+                                <div class="border-t border-gray-100 my-1"></div>
+
+                                <x-dropdown-link :href="route('organizations.index')">
+                                    {{ __('Gerer les organisations') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+                @endif
             </div>
 
             <!-- Settings Dropdown -->
@@ -71,6 +124,32 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
+
+        @if($navOrganizations->isNotEmpty())
+            <div class="pt-2 pb-3 border-t border-gray-200 space-y-2">
+                <p class="px-4 text-xs text-gray-500 uppercase tracking-wide">
+                    {{ __('Organisation active') }}
+                </p>
+                <form method="POST" action="{{ route('organizations.switch') }}" class="px-4">
+                    @csrf
+                    <select name="organization_id" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        @foreach($navOrganizations as $organization)
+                            <option value="{{ $organization->id }}" @selected(optional($currentOrganization)->id === $organization->id)">
+                                {{ $organization->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <x-primary-button class="mt-3 w-full justify-center">
+                        {{ __('Basculer') }}
+                    </x-primary-button>
+                </form>
+                <div class="px-4">
+                    <x-responsive-nav-link :href="route('organizations.index')">
+                        {{ __('Gerer les organisations') }}
+                    </x-responsive-nav-link>
+                </div>
+            </div>
+        @endif
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
