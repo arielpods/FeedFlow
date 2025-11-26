@@ -22,12 +22,7 @@ Route::middleware('auth')->group(function () {
 
     // Organizations
     Route::get('/organizations', [ProfileController::class, 'organizations'])->name('profile.organizations');
-
-    // Surveys
-    Route::post('/survey/questions', [SurveyController::class, 'storeQuestion'])->name('surveys.store.question');
-    Route::get('/survey', [SurveyController::class, 'index'])->name('pages.surveys.index');
-
-        Route::controller(OrganizationController::class)->group(function () {
+    Route::controller(OrganizationController::class)->group(function () {
         Route::get('/organizations', 'index')->name('organizations.index');
         Route::post('/organizations', 'store')->name('organizations.store');
         Route::patch('/organizations/{organization}', 'update')->name('organizations.update');
@@ -43,7 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::controller('App\Http\Controllers\SurveyController')->group(function () {
         Route::get('/organizations/{organization}/survey', 'survey')->name('survey.index');
         Route::get('/organizations/{organization}/survey/create', 'create')->name('survey.create');
-        
+
 
         Route::POST('/organizations/{organization}/survey', 'store')->name('survey.store');
 
@@ -51,7 +46,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/surveys/{survey}/edit',  'edit')->name('surveys.edit');
         Route::patch('/surveys/{survey}', 'update')->name('surveys.update');
         Route::delete('/surveys/{survey}', 'destroy')->name('surveys.destroy');
-        
+
 
     });
 
