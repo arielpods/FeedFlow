@@ -3,6 +3,7 @@ namespace App\Actions\Survey;
 
 use App\DTOs\SurveyDTO;
 use Illuminate\Support\Facades\DB;
+use App\Models\Survey;
 
 final class CloseSurveyAction
 {

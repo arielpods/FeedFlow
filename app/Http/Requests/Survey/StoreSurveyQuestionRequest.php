@@ -11,7 +11,7 @@ class StoreSurveyQuestionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreSurveyQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => ['required', 'string'],
+            'question_type' => ['required', 'string', 'in:radio,checkbox,text'],
+            'options' => ['nullable', 'array'],
         ];
     }
 }

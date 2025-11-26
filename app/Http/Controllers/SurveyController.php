@@ -13,6 +13,11 @@ use App\Models\Survey;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Redirect;
+use App\DTOs\SurveyQuestionDTO;
+use App\Http\Requests\Survey\StoreSurveyQuestionRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use App\Actions\Survey\StoreSurveyQuestionAction;
 
 class SurveyController extends Controller
 {
@@ -61,7 +66,7 @@ class SurveyController extends Controller
     public function update(UpdateSurveyRequest $request, Survey $survey): RedirectResponse
     {
         // L'autorisation est faite dans UpdateSurveyRequest
-        
+
         // Mise à jour (Idéalement via une Action, mais direct ici pour faire simple selon vos fichiers)
         $survey->update($request->validated());
 
@@ -78,4 +83,27 @@ class SurveyController extends Controller
 
         return Redirect::route('survey.index', $organizationId)->with('status', 'survey-deleted');
     }
+
+    public function index()
+    {
+        return view('pages.surveys.index');
+    }
+    public function storeQuestion( StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action):JsonResponse
+    {
+        // 1. Construction du DTO à partir de la requête validée
+        $dto = SurveyQuestionDTO::fromRequest($request);
+
+
+        // 2. Exécution via l’Action
+        $question = $action->execute($dto);
+
+        // Réponse HTTP au format JSON
+        return response()->json([
+            'message' => 'Question created successfully',
+            'data' => $question
+        ],201);
+
+    }
+
+
 }

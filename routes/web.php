@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SurveyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -13,16 +14,25 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::controller(OrganizationController::class)->group(function () {
+    // Organizations
+    Route::get('/organizations', [ProfileController::class, 'organizations'])->name('profile.organizations');
+
+    // Surveys
+    Route::post('/survey/questions', [SurveyController::class, 'storeQuestion'])->name('surveys.store.question');
+    Route::get('/survey', [SurveyController::class, 'index'])->name('pages.surveys.index');
+
+        Route::controller(OrganizationController::class)->group(function () {
         Route::get('/organizations', 'index')->name('organizations.index');
         Route::post('/organizations', 'store')->name('organizations.store');
         Route::patch('/organizations/{organization}', 'update')->name('organizations.update');
         Route::delete('/organizations/{organization}', 'destroy')->name('organizations.destroy');
-        
+
         Route::get('/organizations/{organization}/members', 'members')->name('organizations.members.index');
         Route::post('/organizations/{organization}/members', 'inviteMember')->name('organizations.members.store');
         Route::delete('/organizations/{organization}/members/{user}', 'removeMember')->name('organizations.members.destroy');
