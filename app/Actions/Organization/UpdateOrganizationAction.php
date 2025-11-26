@@ -2,6 +2,7 @@
 namespace App\Actions\Organization;
 
 use App\DTOs\OrganizationDTO;
+use App\Models\Organization;
 use Illuminate\Support\Facades\DB;
 
 final class UpdateOrganizationAction
@@ -16,6 +17,23 @@ final class UpdateOrganizationAction
     public function handle(OrganizationDTO $dto): array
     {
         return DB::transaction(function () use ($dto) {
+            $organization = $dto->organization;
+
+            if (!$organization && $dto->organizationId) {
+                $organization = Organization::findOrFail($dto->organizationId);
+            }
+
+            if (!$organization) {
+                throw new \InvalidArgumentException('Organization not provided.');
+            }
+
+            $organization->fill([
+                'name' => $dto->name ?? $organization->name,
+            ])->save();
+
+            return [
+                'organization' => $organization->fresh('members'),
+            ];
         });
     }
 }

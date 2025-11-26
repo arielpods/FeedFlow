@@ -18,9 +18,11 @@
                 </div>
 
                 @php
-                    $navOrganizations = collect(optional(Auth::user())->organizations ?? []);
-                    $activeOrganizationId = session('current_organization_id');
-                    $currentOrganization = $navOrganizations->firstWhere('id', $activeOrganizationId) ?? $navOrganizations->first();
+                    $navOrganizations = ($sharedOrganizations ?? collect())->values();
+                    if ($navOrganizations->isEmpty() && Auth::check()) {
+                        $navOrganizations = collect(optional(Auth::user())->organizations ?? []);
+                    }
+                    $currentOrganization = $sharedCurrentOrganization ?? ($navOrganizations->first());
                 @endphp
 
                 @if($navOrganizations->isNotEmpty())

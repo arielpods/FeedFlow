@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -66,5 +67,23 @@ class User extends Authenticatable
         return $this->belongsToMany(Organization::class, 'organization_user')
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    /**
+     * Determine if the user is admin of a given organization.
+     */
+    public function isOrganizationAdmin(?Organization $organization): bool
+    {
+        if (!$organization) {
+            return false;
+        }
+
+        if ($organization->user_id === $this->id) {
+            return true;
+        }
+
+        $relation = $this->organizations->firstWhere('id', $organization->id);
+
+        return $relation && data_get($relation->pivot, 'role') === 'admin';
     }
 }
