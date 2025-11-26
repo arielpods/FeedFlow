@@ -7,55 +7,89 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            
-            {{-- Section de création (Exemple simple) --}}
-            <div class="bg-white p-4 shadow sm:rounded-lg">
+
+            <div class="bg-white p-6 shadow sm:rounded-lg">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Créer une nouvelle organisation</h3>
                 <form method="POST" action="{{ route('organizations.store') }}" class="flex gap-4">
                     @csrf
-                    <input type="text" name="name" placeholder="Nom de l'organisation" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full" required>
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    <div class="flex-1">
+                        <input type="text" name="name" placeholder="Nom de l'organisation" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full" required>
+                    </div>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shrink-0">
                         Créer
                     </button>
                 </form>
             </div>
 
-            {{-- Liste des organisations --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Liste de vos organisations</h3>
-                    
-                    <div class="grid gap-4">
+
+                    <div class="grid gap-6">
                         @forelse ($organizations as $organization)
-                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                                <div>
-                                    <div class="font-bold text-lg">{{ $organization->name }}</div>
-                                    <div class="text-sm text-gray-500">
-                                        {{-- Affichage du rôle si disponible via la relation pivot --}}
-                                        @if($organization->pivot)
-                                            Rôle : {{ $organization->pivot->role === 'admin' ? 'Administrateur' : 'Membre' }}
+                            <div class="bg-gray-50 p-4 border border-gray-200 rounded-lg shadow-sm space-y-4">
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="font-bold text-lg">{{ $organization->name }}</div>
+                                        <div class="text-sm text-gray-500">
+                                            @if($organization->pivot)
+                                                Rôle : {{ $organization->pivot->role === 'admin' ? 'Administrateur' : 'Membre' }}
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-3">
+                                        @if(isset($currentOrganization) && $currentOrganization->id !== $organization->id)
+                                            <form method="POST" action="{{ route('organizations.switch') }}">
+                                                @csrf
+                                                <input type="hidden" name="organization_id" value="{{ $organization->id }}">
+                                                <button type="submit" class="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                                                    Basculer
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-green-700 text-sm font-semibold px-3 py-1 bg-green-100 rounded-full">Actuelle</span>
                                         @endif
+
+                                        @can('update', $organization)
+                                            <button 
+                                                class="text-yellow-600 hover:text-yellow-800 text-sm font-medium"
+                                                onclick="document.getElementById('edit-{{ $organization->id }}').classList.toggle('hidden');">
+                                                Modifier
+                                            </button>
+
+                                            <form method="POST" action="{{ route('organizations.destroy', $organization) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer {{ $organization->name }} ?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                                    Supprimer
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </div>
-
-                                <div class="flex items-center gap-2">
-                                    {{-- Bouton pour basculer sur cette organisation --}}
-                                    @if(isset($currentOrganization) && $currentOrganization->id !== $organization->id)
-                                        <form method="POST" action="{{ route('organizations.switch') }}">
+                                
+                                @can('update', $organization)
+                                    <div id="edit-{{ $organization->id }}" class="hidden pt-4 border-t border-gray-200 mt-4">
+                                        <h4 class="font-semibold mb-2">Modifier l'organisation :</h4>
+                                        <form method="POST" action="{{ route('organizations.update', $organization) }}" class="flex items-end gap-4">
                                             @csrf
-                                            <input type="hidden" name="organization_id" value="{{ $organization->id }}">
-                                            <button type="submit" class="text-blue-600 hover:underline text-sm">
-                                                Basculer
+                                            @method('PATCH')
+                                            
+                                            <div class="flex-1">
+                                                <input type="text" name="name" value="{{ $organization->name }}" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full" required>
+                                            </div>
+
+                                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shrink-0">
+                                                Sauvegarder
                                             </button>
                                         </form>
-                                    @else
-                                        <span class="text-green-600 text-sm font-bold px-2 py-1 bg-green-100 rounded">Actuelle</span>
-                                    @endif
-                                </div>
+                                    </div>
+                                @endcan
                             </div>
                         @empty
-                            {{-- C'est ici que le bug se trouvait avant : le bloc @empty gère l'absence d'organisations --}}
-                            <div class="bg-white text-center py-8">
+                            <div class="bg-white text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
                                 <div class="text-gray-500 mb-2">
                                     {{ __('Aucune organisation pour le moment.') }}
                                 </div>
@@ -63,6 +97,7 @@
                             </div>
                         @endforelse
                     </div>
+
                 </div>
             </div>
 

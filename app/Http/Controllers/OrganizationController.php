@@ -81,7 +81,7 @@ class OrganizationController extends Controller
                 $user->id => ['role' => $data['role']],
             ]);
         } else {
-            // Placeholder for invitation email / user creation flow.
+            
         }
 
         return Redirect::route('organizations.index')->with('status', 'member-invited');

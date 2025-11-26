@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
                 $currentOrganization = null;
 
                 if ($user = Auth::user()) {
+                    // dire que $user = \App\Models\User sinon erreur
+                    /** @var \App\Models\User $user */
                     $organizations = $user->organizations()->with('members')->get();
                     $currentOrganizationId = session('current_organization_id');
 
