@@ -22,6 +22,7 @@ class StoreSurveyQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'survey_id' => ['required', 'exists:surveys,id'],
             'title' => ['required', 'string'],
             'question_type' => ['required', 'string', 'in:radio,checkbox,text'],
             'options' => ['nullable', 'array'],

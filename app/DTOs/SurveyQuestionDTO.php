@@ -8,6 +8,7 @@ final class SurveyQuestionDTO
 {
     //définit les données nécessaires
     private function __construct(
+        public readonly int $surveyId,
         public readonly string $title,
         public readonly string $questionType,
         public readonly array $options
@@ -19,9 +20,10 @@ final class SurveyQuestionDTO
         $options = $request->input('options', []);
 
         return new self(
+            surveyId: $request->input('survey_id'),
             title: $request->input('title'),
             questionType: $request->input('question_type'),
-            options: $request->input('options', null),
+            options: $request->input('options', []),
         );
     }
 }

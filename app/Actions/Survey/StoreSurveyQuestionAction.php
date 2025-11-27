@@ -12,13 +12,13 @@ final class StoreSurveyQuestionAction
     /**
      * Store a Survey
      * @param SurveyQuestionDTO $dto
-     * @return array
+     * @return SurveyQuestion
      */
     public function execute(SurveyQuestionDTO $dto): SurveyQuestion
     {
         // Création de la question via Eloquent
         $question = SurveyQuestion::create([
-               'survey_id' => 1,
+            'survey_id'     => $dto->surveyId,
                'title'         => $dto->title,
                'question_type' => $dto->questionType,
                'options'          => $dto->options,

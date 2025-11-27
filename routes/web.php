@@ -34,6 +34,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/organizations/switch', 'switch')->name('organizations.switch');
     });
 
+    // Surveys
+    Route::post('/survey/questions', [SurveyController::class, 'storeQuestion'])->name('surveys.store.question');
+    Route::get('/survey/questions', [SurveyController::class, 'index'])->name('pages.surveys.index');
     //Route::controller(SurveyController::class)->group(function () {
     Route::controller('App\Http\Controllers\SurveyController')->group(function () {
         Route::get('/organizations/{organization}/survey', 'survey')->name('survey.index');

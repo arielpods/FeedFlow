@@ -12,7 +12,7 @@ class SurveyQuestion extends Model
     protected $table    = 'survey_questions';
     public $timestamps  = true;
     protected $fillable = [
-        'id', 'survey_id',
+        'survey_id',
         'title', 'question_type', 'options',
         'created_at', 'updated_at'
     ];
