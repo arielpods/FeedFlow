@@ -28,4 +28,22 @@ class StoreSurveyQuestionRequest extends FormRequest
             'options' => ['nullable', 'array'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'options.array' => 'Options must be an array.',
+            'options.required' => 'Options are required.',
+            'options.min' => 'Options must contain at least one option.',
+            'options.max' => 'Options must contain at most 5 options.',
+            'options.string' => 'Options must be strings.',
+            'options.unique' => 'Options must be unique.',
+            'options.in' => 'Options must be radio, checkbox, or text.',
+            'question_type.in' => 'Question type must be radio, checkbox, or text.',
+            'question_type.required' => 'Question type is required.',
+            'title.required' => 'Title is required.',
+            'survey_id.required' => 'Survey is required.',
+            'survey_id.exists' => 'Survey does not exist.',
+        ];
+    }
 }

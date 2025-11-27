@@ -18,9 +18,9 @@ final class StoreSurveyQuestionAction
     {
         // Création de la question via Eloquent
         $question = SurveyQuestion::create([
-            'survey_id'     => $dto->surveyId,
+               'survey_id'     => $dto->survey_id,
                'title'         => $dto->title,
-               'question_type' => $dto->questionType,
+               'question_type' => $dto->question_type,
                'options'          => $dto->options,
            ]);
         return $question;

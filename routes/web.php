@@ -21,7 +21,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Organizations
-    Route::get('/organizations', [ProfileController::class, 'organizations'])->name('profile.organizations');
     Route::controller(OrganizationController::class)->group(function () {
         Route::get('/organizations', 'index')->name('organizations.index');
         Route::post('/organizations', 'store')->name('organizations.store');
@@ -35,23 +34,20 @@ Route::middleware('auth')->group(function () {
     });
 
     // Surveys
-    Route::post('/survey/questions', [SurveyController::class, 'storeQuestion'])->name('surveys.store.question');
-    Route::get('/survey/questions', [SurveyController::class, 'index'])->name('pages.surveys.index');
-    //Route::controller(SurveyController::class)->group(function () {
-    Route::controller('App\Http\Controllers\SurveyController')->group(function () {
+    Route::controller(SurveyController::class)->group(function () {
+        Route::post('/survey/questions', 'storeQuestion')->name('surveys.store.question');
+        // Dans routes/web.php
+        Route::get('/survey/{surveyId}/questions', [SurveyController::class, 'index'])->name('pages.surveys.index');
+
         Route::get('/organizations/{organization}/survey', 'survey')->name('survey.index');
         Route::get('/organizations/{organization}/survey/create', 'create')->name('survey.create');
+        Route::post('/organizations/{organization}/survey', 'store')->name('survey.store');
 
-
-        Route::POST('/organizations/{organization}/survey', 'store')->name('survey.store');
-
-
-        Route::get('/surveys/{survey}/edit',  'edit')->name('surveys.edit');
+        Route::get('/surveys/{survey}/edit', 'edit')->name('surveys.edit');
         Route::patch('/surveys/{survey}', 'update')->name('surveys.update');
         Route::delete('/surveys/{survey}', 'destroy')->name('surveys.destroy');
-
-
     });
 
+});
+
 require __DIR__.'/auth.php';
- });

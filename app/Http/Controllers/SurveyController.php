@@ -10,13 +10,13 @@ use App\Http\Requests\Survey\StoreSurveyRequest;
 use App\Http\Requests\Survey\UpdateSurveyRequest;
 use App\Models\Organization;
 use App\Models\Survey;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Redirect;
 use App\DTOs\SurveyQuestionDTO;
 use App\Http\Requests\Survey\StoreSurveyQuestionRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Actions\Survey\StoreSurveyQuestionAction;
 
 class SurveyController extends Controller
@@ -26,6 +26,9 @@ class SurveyController extends Controller
         private readonly UpdateSurveyAction $updateSurvey
     ) {}
 
+    /**
+     * @throws AuthorizationException
+     */
     public function survey(Organization $organization): View
     {
         $this->authorize('view', $organization);
@@ -69,7 +72,6 @@ class SurveyController extends Controller
 
         // Mise à jour (Idéalement via une Action, mais direct ici pour faire simple selon vos fichiers)
         $survey->update($request->validated());
-
         return Redirect::route('survey.index', $survey->organization_id)->with('status', 'survey-updated');
     }
 
@@ -84,9 +86,11 @@ class SurveyController extends Controller
         return Redirect::route('survey.index', $organizationId)->with('status', 'survey-deleted');
     }
 
-    public function index()
+    public function index($surveyId)
     {
-        return view('pages.surveys.index');
+        $survey = \App\Models\Survey::findOrFail($surveyId);
+
+        return view('pages.surveys.index', compact('survey'));
     }
     public function storeQuestion( StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action):JsonResponse
     {

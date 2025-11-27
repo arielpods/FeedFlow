@@ -26,7 +26,6 @@ final class StoreSurveyAction
                 'start_date' => $dto->startDate,
                 'end_date' => $dto->endDate,
                 'is_anonymous' => $dto->isAnonymous,
-                'token' => Str::random(32),
             ]);
 
             return [

@@ -10,8 +10,14 @@
             <div class="bg-white p-6 shadow sm:rounded-lg">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Créer une nouvelle question</h3>
 
+                @if ($errors->any)
+                    @foreach ($errors->all() as $error)
+                        <p>{{$error}}}</p>
+                    @endforeach
+                @endif
                 <form action="{{ route('surveys.store.question') }}" method="POST" >
                 @csrf
+                    <input type="hidden" name="survey_id" value="{{ $survey->id }}">
 
                     <!-- Titre -->
                     <div class="mb-4">

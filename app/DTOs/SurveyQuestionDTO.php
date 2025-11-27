@@ -2,28 +2,28 @@
 
 namespace App\DTOs;
 
+use App\Http\Requests\Survey\StoreSurveyQuestionRequest;
 use Illuminate\Http\Request;
 
 final class SurveyQuestionDTO
 {
     //définit les données nécessaires
     private function __construct(
-        public readonly int $surveyId,
+        public readonly int $survey_id,
         public readonly string $title,
-        public readonly string $questionType,
+        public readonly string $question_type,
         public readonly array $options
     ) {}
 
     //  créer le DTO à partir d'une requête validée.
-    public static function fromRequest(Request $request): self
+    public static function fromRequest(StoreSurveyQuestionRequest $request): self
     {
-        $options = $request->input('options', []);
 
         return new self(
-            surveyId: $request->input('survey_id'),
-            title: $request->input('title'),
-            questionType: $request->input('question_type'),
-            options: $request->input('options', []),
+            survey_id: $request->survey_id,
+            title: $request->title,
+            question_type: $request->question_type,
+            options: $request->options,
         );
     }
 }
