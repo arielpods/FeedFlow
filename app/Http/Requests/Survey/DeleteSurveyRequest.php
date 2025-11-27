@@ -11,18 +11,19 @@ class DeleteSurveyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $survey = $this->route('survey');
+        // On utilise la SurveyPolicy définie ci-dessus
+        return $survey && $this->user()->can('delete', $survey);
     }
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            //
+            // Pas de règles de validation spécifiques pour une suppression,
+            // l'autorisation suffit.
         ];
     }
 }

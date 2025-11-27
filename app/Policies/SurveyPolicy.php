@@ -16,13 +16,34 @@ class SurveyPolicy
         return false;
     }
 
+    
     /**
      * Determine whether the user can view the model.
      */
     public function view(User $user, Survey $survey): bool
     {
-        return false;
+        // Un utilisateur peut voir le sondage s'il est membre de l'organisation
+        return $user->organizations->contains($survey->organization_id);
     }
+
+    /**
+     * Determine whether the user can update the model.
+     */
+    public function update(User $user, Survey $survey): bool
+    {
+        //  Admin de l'orga or Propriétaire du sondage
+        return $user->id === $survey->user_id || $user->isOrganizationAdmin($survey->organization);
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     */
+    public function delete(User $user, Survey $survey): bool
+    {
+        //  Admin de l'orga or Propriétaire du sondage
+        return $user->id === $survey->user_id || $user->isOrganizationAdmin($survey->organization);
+    }
+
 
     /**
      * Determine whether the user can create models.
@@ -32,22 +53,7 @@ class SurveyPolicy
         return false;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Survey $survey): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Survey $survey): bool
-    {
-        return false;
-    }
-
+   
     /**
      * Determine whether the user can restore the model.
      */

@@ -3,87 +3,76 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Survey\StoreSurveyAction;
-use App\Actions\Survey\UpdateSurveyAction; // Ajout
+use App\Actions\Survey\UpdateSurveyAction;
 use App\DTOs\SurveyDTO;
+use App\Http\Requests\Survey\DeleteSurveyRequest; // <-- Import Important
 use App\Http\Requests\Survey\StoreSurveyRequest;
-use App\Http\Requests\Survey\UpdateSurveyRequest; // Ajout
+use App\Http\Requests\Survey\UpdateSurveyRequest;
 use App\Models\Organization;
-use App\Models\Survey; // Ajout
-use Illuminate\Http\RedirectResponse; // Ajout
-use Illuminate\Http\Request; // Ajout
-use Illuminate\Support\Facades\Redirect;
+use App\Models\Survey;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Redirect;
 
 class SurveyController extends Controller
 {
     public function __construct(
         private readonly StoreSurveyAction $storeSurvey,
-        private readonly UpdateSurveyAction $updateSurvey // Injection de l'action Update
-    ) {
-    }
+        private readonly UpdateSurveyAction $updateSurvey
+    ) {}
 
     public function survey(Organization $organization): View
     {
         $this->authorize('view', $organization);
-        
+        // On récupère les sondages
         $surveys = $organization->surveys()->get();
 
         return view('surveys.index', [
             'organization' => $organization,
-            'surveys' => $surveys, 
+            'surveys' => $surveys,
         ]);
     }
 
     public function create(Organization $organization): View
     {
-        $this->authorize('update', $organization); 
-
-        return view('surveys.create', [
-            'organization' => $organization
-        ]);
+        // Seuls les membres avec droits peuvent créer (souvent admin, ou via policy update orga)
+        $this->authorize('update', $organization);
+        return view('surveys.create', ['organization' => $organization]);
     }
 
     public function store(StoreSurveyRequest $request, Organization $organization)
     {
         $dto = SurveyDTO::fromRequest($request);
         $this->storeSurvey->handle($dto);
-        
         return Redirect::route('survey.index', $organization)->with('status', 'survey-created');
     }
 
-    // --- NOUVELLES MÉTHODES ---
-
     public function edit(Survey $survey): View
     {
-        // On vérifie si l'user a le droit de modifier (via SurveyPolicy)
-        // Note: Assurez-vous que votre SurveyPolicy retourne true pour update
-        // $this->authorize('update', $survey); 
+        // Vérification via la Policy Survey
+        $this->authorize('update', $survey);
 
         return view('surveys.edit', [
             'survey' => $survey,
-            'organization' => $survey->organization // On passe l'orga pour le lien de retour
+            'organization' => $survey->organization
         ]);
     }
 
     public function update(UpdateSurveyRequest $request, Survey $survey): RedirectResponse
     {
-        // $this->authorize('update', $survey);
-
-        $dto = SurveyDTO::fromRequest($request);
-        // On passe l'ID du sondage au DTO ou à l'action si besoin, 
-        // ici l'action UpdateSurveyAction devra être adaptée si elle ne prend que le DTO
-        // Pour l'instant on suppose que l'action gère la mise à jour basique
+        // L'autorisation est faite dans UpdateSurveyRequest
         
-        // Mise à jour simple via Eloquent si l'action n'est pas prête
+        // Mise à jour (Idéalement via une Action, mais direct ici pour faire simple selon vos fichiers)
         $survey->update($request->validated());
 
         return Redirect::route('survey.index', $survey->organization_id)->with('status', 'survey-updated');
     }
 
-    public function destroy(Survey $survey): RedirectResponse
+    // --- C'EST ICI LA SUPPRESSION ---
+    public function destroy(DeleteSurveyRequest $request, Survey $survey): RedirectResponse
     {
-        // $this->authorize('delete', $survey);
-        
+        // L'autorisation est faite dans DeleteSurveyRequest
+
         $organizationId = $survey->organization_id;
         $survey->delete();
 
