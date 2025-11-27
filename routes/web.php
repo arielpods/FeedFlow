@@ -3,6 +3,7 @@
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SurveyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,21 +30,40 @@ Route::middleware('auth')->group(function () {
         Route::post('/organizations/switch', 'switch')->name('organizations.switch');
     });
 
-    //Route::controller(SurveyController::class)->group(function () {
+    
+
+
     Route::controller('App\Http\Controllers\SurveyController')->group(function () {
-        Route::get('/organizations/{organization}/survey', 'survey')->name('survey.index');
-        Route::get('/organizations/{organization}/survey/create', 'create')->name('survey.create');
+
+        // ... Vos autres routes ...
+
+        // ROUTES LIÉES À L'ORGANISATION (Création et Liste)
+        Route::prefix('organizations/{organization}')->group(function () {
+            
+            // Liste des sondages
+            Route::get('/survey', 'survey')->name('survey.index');
+            
+            // Formulaire de création (C'est cette ligne qui vous manque ou qui est mal nommée)
+            Route::get('/survey/create',  'create')->name('surveys.create');
+            
+            // Action de sauvegarde
+            Route::post('/survey',  'store')->name('surveys.store');
+        });
+
+        // ROUTES LIÉES AU SONDAGE LUI-MÊME (Modification, Suppression, Questions)
+        // Pas besoin du préfixe organization ici car on a l'ID du sondage
         
-
-        Route::POST('/organizations/{organization}/survey', 'store')->name('survey.store');
-
-
+        // Modification / Suppression du sondage
         Route::get('/surveys/{survey}/edit',  'edit')->name('surveys.edit');
-        Route::patch('/surveys/{survey}', 'update')->name('surveys.update');
-        Route::delete('/surveys/{survey}', 'destroy')->name('surveys.destroy');
-        
+        Route::patch('/surveys/{survey}',  'update')->name('surveys.update');
+        Route::delete('/surveys/{survey}',  'destroy')->name('surveys.destroy');
+
+        // Gestion des Questions (Story 3)
+        Route::get('/surveys/{survey}/questions', 'manageQuestions')->name('surveys.questions.index');
+        Route::post('/surveys/{survey}/questions',  'storeQuestion')->name('surveys.questions.store');
+        Route::delete('/questions/{question}', 'destroyQuestion')->name('surveys.questions.destroy');
 
     });
+});
 
 require __DIR__.'/auth.php';
- });

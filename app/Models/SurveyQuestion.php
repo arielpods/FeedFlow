@@ -4,18 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SurveyQuestion extends Model
 {
     use HasFactory;
 
-    protected $table    = 'surveys_questions';
+    protected $table    = 'survey_questions';
     public $timestamps  = true;
+    
     protected $fillable = [
-        'id', 'survey_id',
-        'title', 'question_type', 'options',
-        'created_at', 'updated_at'
+        'survey_id',
+        'title', 
+        'question_type', // text, radio, checkbox, scale
+        'options',       // Stocké en JSON
     ];
+
+    // C'est ici que JSON truc machin est converti en tableau automatiquement
     protected $casts = [
+        'options' => 'array',
     ];
+
+    public function survey(): BelongsTo
+    {
+        return $this->belongsTo(Survey::class);
+    }
 }

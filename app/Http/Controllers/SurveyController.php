@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Survey\StoreSurveyAction;
 use App\Actions\Survey\UpdateSurveyAction;
 use App\DTOs\SurveyDTO;
-use App\Http\Requests\Survey\DeleteSurveyRequest; // <-- Import Important
+use App\Http\Requests\Survey\DeleteSurveyRequest; 
 use App\Http\Requests\Survey\StoreSurveyRequest;
 use App\Http\Requests\Survey\UpdateSurveyRequest;
 use App\Models\Organization;
@@ -13,12 +13,17 @@ use App\Models\Survey;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\SurveyQuestion;
+use App\Actions\Survey\StoreSurveyQuestionAction; 
+use App\Http\Requests\Survey\StoreSurveyQuestionRequest; 
+use App\DTOs\SurveyQuestionDTO; 
 
 class SurveyController extends Controller
 {
     public function __construct(
         private readonly StoreSurveyAction $storeSurvey,
-        private readonly UpdateSurveyAction $updateSurvey
+        private readonly UpdateSurveyAction $updateSurvey,
+        private readonly StoreSurveyQuestionAction $storeQuestionAction 
     ) {}
 
     public function survey(Organization $organization): View
@@ -77,5 +82,37 @@ class SurveyController extends Controller
         $survey->delete();
 
         return Redirect::route('survey.index', $organizationId)->with('status', 'survey-deleted');
+    }
+
+    // --- GESTION DES QUESTIONS ---
+
+    public function manageQuestions(Survey $survey): View
+    {
+        $this->authorize('update', $survey);
+
+        return view('surveys.questions', [
+            'survey' => $survey,
+            'questions' => $survey->questions()->get() // Relation à définir dans le modèle Survey si pas fait
+        ]);
+    }
+
+    public function storeQuestion(StoreSurveyQuestionRequest $request, Survey $survey)
+    {
+        // L'autorisation est faite dans la Request
+
+        $dto = SurveyQuestionDTO::fromRequest($request);
+        $this->storeQuestionAction->handle($dto);
+
+        return Redirect::route('surveys.questions.index', $survey)->with('status', 'question-added');
+    }
+
+    public function destroyQuestion(SurveyQuestion $question)
+    {
+        // Vérifier que l'user a le droit sur le survey parent
+        $this->authorize('update', $question->survey);
+        
+        $question->delete();
+        
+        return back()->with('status', 'question-deleted');
     }
 }
