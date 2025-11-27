@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Survey\StoreSurveyAction;
 use App\Actions\Survey\UpdateSurveyAction;
 use App\DTOs\SurveyDTO;
-use App\Http\Requests\Survey\DeleteSurveyRequest; 
+use App\Http\Requests\Survey\DeleteSurveyRequest;
 use App\Http\Requests\Survey\StoreSurveyRequest;
 use App\Http\Requests\Survey\UpdateSurveyRequest;
 use App\Models\Organization;
@@ -14,16 +14,16 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\SurveyQuestion;
-use App\Actions\Survey\StoreSurveyQuestionAction; 
-use App\Http\Requests\Survey\StoreSurveyQuestionRequest; 
-use App\DTOs\SurveyQuestionDTO; 
+use App\Actions\Survey\StoreSurveyQuestionAction;
+use App\Http\Requests\Survey\StoreSurveyQuestionRequest;
+use App\DTOs\SurveyQuestionDTO;
 
 class SurveyController extends Controller
 {
     public function __construct(
         private readonly StoreSurveyAction $storeSurvey,
         private readonly UpdateSurveyAction $updateSurvey,
-        private readonly StoreSurveyQuestionAction $storeQuestionAction 
+        private readonly StoreSurveyQuestionAction $storeQuestionAction
     ) {}
 
     public function survey(Organization $organization): View
@@ -66,7 +66,7 @@ class SurveyController extends Controller
     public function update(UpdateSurveyRequest $request, Survey $survey): RedirectResponse
     {
         // L'autorisation est faite dans UpdateSurveyRequest
-        
+
         // Mise à jour (Idéalement via une Action, mais direct ici pour faire simple selon vos fichiers)
         $survey->update($request->validated());
 
@@ -110,9 +110,15 @@ class SurveyController extends Controller
     {
         // Vérifier que l'user a le droit sur le survey parent
         $this->authorize('update', $question->survey);
-        
+
         $question->delete();
-        
+
         return back()->with('status', 'question-deleted');
+    }
+
+    public function show(string $token): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    {
+        $survey = Survey::where('token', $token)->findOrFail();
+        return view('surveys.show', compact('survey'));
     }
 }
