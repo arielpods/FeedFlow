@@ -54,7 +54,7 @@
                                         @endif
 
                                         @can('update', $organization)
-                                            <button 
+                                            <button
                                                 class="text-yellow-600 hover:text-yellow-800 text-sm font-medium"
                                                 onclick="document.getElementById('edit-{{ $organization->id }}').classList.toggle('hidden'); event.stopPropagation();"> {{-- event.stopPropagation() ajouté pour le bouton Modifier --}}
                                                 Modifier
@@ -67,7 +67,7 @@
                                                     Supprimer
                                                 </button>
                                             </form>
-                                            
+
                                             <form method="GET" action="{{ route('organizations.members.index', $organization->id) }}">
                                                 <button type="submit" class="text-blue-600 hover:text-blue-900 text-sm font-medium">
                                                     Members
@@ -76,15 +76,15 @@
                                         @endcan
                                     </div>
                                 </div>
-                                
+
                                 @can('update', $organization)
                                     <div id="edit-{{ $organization->id }}" class="hidden pt-4 border-t border-gray-200 mt-4">
                                         <h4 class="font-semibold mb-2">Modifier l'organisation :</h4>
                                         {{-- Ajout de onclick="event.stopPropagation();" au formulaire pour empêcher la navigation lors de la soumission --}}
-                                        <form method="POST" action="{{ route('organizations.update', $organization) }}" class="flex items-end gap-4" onclick="event.stopPropagation();"> 
+                                        <form method="POST" action="{{ route('organizations.update', $organization) }}" class="flex items-end gap-4" onclick="event.stopPropagation();">
                                             @csrf
                                             @method('PATCH')
-                                            
+
                                             {{-- CORRECTION: Utilisation d'une div flex-1 wrapper pour forcer l'input à coexister avec le bouton --}}
                                             <div class="flex-1">
                                                 <input type="text" name="name" value="{{ $organization->name }}" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full" required>
