@@ -35,7 +35,8 @@ Route::middleware('auth')->group(function () {
 
     // Surveys
     Route::controller(SurveyController::class)->group(function () {
-        Route::post('/survey/questions', 'storeQuestion')->name('surveys.store.question');
+        Route::post('/survey/questions', 'storeQuestion')->name('surveys.question');
+        Route::delete('/survey/questions/{question}', 'destroy_question')->name('surveys.question.destroy');
         // Dans routes/web.php
         Route::get('/survey/{surveyId}/questions', [SurveyController::class, 'index'])->name('pages.surveys.index');
 

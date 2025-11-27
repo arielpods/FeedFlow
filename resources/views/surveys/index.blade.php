@@ -28,6 +28,10 @@
                     <button class="btn btn-sm btn-danger">Supprimer</button>
                 </form>
                 @endcan
+                <a href="{{ route('pages.surveys.index', $survey->id) }}"
+                   class="btn btn-sm btn-outline-primary">
+                    + Ajouter des questions
+                </a>
             </td>
         </tr>
         @endforeach

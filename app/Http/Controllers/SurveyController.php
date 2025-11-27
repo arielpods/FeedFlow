@@ -86,28 +86,31 @@ class SurveyController extends Controller
         return Redirect::route('survey.index', $organizationId)->with('status', 'survey-deleted');
     }
 
+    // ... existing code ...
     public function index($surveyId)
     {
         $survey = \App\Models\Survey::findOrFail($surveyId);
+        $questions = $survey->questions()->get();
 
-        return view('pages.surveys.index', compact('survey'));
+        return view('pages.surveys.index', compact('survey', 'questions'));
     }
-    public function storeQuestion( StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action):JsonResponse
+    public function destroy_question($questionId)
     {
-        // 1. Construction du DTO à partir de la requête validée
+        $question = \App\Models\SurveyQuestion::findOrFail($questionId);
+
+        $question->delete();
+
+        return back()->with('success', 'Question supprimée avec succès.');
+    }
+
+// ... existing code ...
+    public function storeQuestion(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
+    {
         $dto = SurveyQuestionDTO::fromRequest($request);
-
-
-        // 2. Exécution via l’Action
         $question = $action->execute($dto);
 
-        // Réponse HTTP au format JSON
-        return response()->json([
-            'message' => 'Question created successfully',
-            'data' => $question
-        ],201);
-
+        // Utiliser directement la valeur du request au lieu du DTO
+        return redirect()->route('pages.surveys.index', ['surveyId' => $request->input('survey_id')])
+            ->with('success', 'Question ajoutée avec succès !');
     }
-
-
 }
