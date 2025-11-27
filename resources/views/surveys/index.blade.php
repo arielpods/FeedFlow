@@ -6,8 +6,7 @@
             </h2>
             {{-- Bouton de création --}}
             @can('update', $organization)
-                <a href="{{ route('surveys.create', $organization) }}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded transition">
-                    + Créer un sondage
+                <a href="{{ route('surveys.create', $organization) }}"  class="w-full mt-4 p-6 bg-[#1b1b18] text-white py-2 rounded-lg transition"> + Créer un sondage
                 </a>
             @endcan
         </div>
@@ -59,17 +58,24 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                                 
-                                                {{-- BOUTON AJOUTÉ : GÉRER LES QUESTIONS --}}
+                                                {{-- NOUVEAU BOUTON : LIEN PUBLIC --}}
+                                                <a href="{{ route('surveys.public.show', $survey->token) }}" target="_blank" class="text-teal-600 hover:text-teal-900 bg-teal-50 px-3 py-1 rounded-md border border-teal-200">
+                                                    🔗 Lien public
+                                                </a>
+
+                                                {{-- Bouton Questions --}}
                                                 @can('update', $survey)
                                                     <a href="{{ route('surveys.questions.index', $survey) }}" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded-md border border-indigo-200">
                                                         Questions ({{ $survey->questions_count ?? 0 }})
                                                     </a>
                                                 @endcan
 
+                                                {{-- Bouton Modifier --}}
                                                 @can('update', $survey)
                                                     <a href="{{ route('surveys.edit', $survey) }}" class="text-yellow-600 hover:text-yellow-900">Modifier</a>
                                                 @endcan
 
+                                                {{-- Bouton Supprimer --}}
                                                 @can('delete', $survey)
                                                     <form action="{{ route('surveys.destroy', $survey) }}" method="POST" class="inline-block" onsubmit="return confirm('Êtes-vous sûr ?');">
                                                         @csrf

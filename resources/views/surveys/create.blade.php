@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-900">
 
                     {{-- OUVERTURE DU FORMULAIRE CORRECTE VERS LA ROUTE STORE --}}
-                    <form method="POST" action="{{ route('survey.store', $organization) }}">
+                    <form method="POST" action="{{ route('surveys.store', $organization) }}">
                         @csrf
 
                         {{-- Si vous avez vraiment un fichier _form valide, vous pouvez le garder : --}}

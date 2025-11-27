@@ -17,20 +17,24 @@ use App\Models\SurveyQuestion;
 use App\Actions\Survey\StoreSurveyQuestionAction; 
 use App\Http\Requests\Survey\StoreSurveyQuestionRequest; 
 use App\DTOs\SurveyQuestionDTO; 
+use App\Http\Requests\Survey\StoreSurveyAnswerRequest;
+use App\DTOs\SurveyAnswerDTO;
+use App\Actions\Survey\StoreSurveyAnswerAction;
 
 class SurveyController extends Controller
 {
     public function __construct(
         private readonly StoreSurveyAction $storeSurvey,
         private readonly UpdateSurveyAction $updateSurvey,
-        private readonly StoreSurveyQuestionAction $storeQuestionAction 
+        private readonly StoreSurveyQuestionAction $storeQuestionAction,
+        private readonly StoreSurveyAnswerAction $storeAnswerAction
     ) {}
 
     public function survey(Organization $organization): View
     {
         $this->authorize('view', $organization);
         // On récupère les sondages
-        $surveys = $organization->surveys()->get();
+        $surveys = $organization->surveys()->withCount('questions')->get();
 
         return view('surveys.index', [
             'organization' => $organization,
@@ -115,4 +119,33 @@ class SurveyController extends Controller
         
         return back()->with('status', 'question-deleted');
     }
+
+
+
+
+    // --- PARTIE PUBLIQUE : RÉPONDRE AU SONDAGE ---
+
+    public function showPublic(string $token): View
+    {
+        $survey = Survey::where('token', $token)->with('questions')->firstOrFail();
+
+        // Vérification basique des dates
+        if (now()->lt($survey->start_date) || now()->gt($survey->end_date)) {
+            abort(404, 'Ce sondage n\'est pas disponible (dates invalides).');
+        }
+
+        return view('surveys.public.show', ['survey' => $survey]);
+    }
+
+    public function submitPublic(StoreSurveyAnswerRequest $request, string $token): RedirectResponse
+    {
+        $dto = SurveyAnswerDTO::fromRequest($request);
+        
+        $this->storeAnswerAction->handle($dto);
+
+        return Redirect::route('surveys.public.thanks');
+    }
+
+
+    
 }

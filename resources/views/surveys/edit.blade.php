@@ -49,9 +49,11 @@
                             <a href="{{ route('survey.index', $organization) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 transition">
                                 Annuler
                             </a>
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 text-white transition">
+
+                            <button type="submit" class="w-full mt-4 p-6 bg-[#1b1b18] text-white py-2 rounded-lg transition">
                                 Mettre à jour
                             </button>
+                            
                         </div>
 
                     </form>
