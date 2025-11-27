@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="mt-8 flex justify-end">
-                    <button type="submit" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-md hover:bg-indigo-500 transition">
+                    <button type="submit"  class="w-full mt-4 p-6 bg-[#1b1b18] text-white py-2 rounded-lg transition">
                         Envoyer
                     </button>
                 </div>
