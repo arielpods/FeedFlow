@@ -3,8 +3,7 @@
 @section('content')
 <h1>Sondages</h1>
 
-<a href="{{ route('survey.store') }}" class="btn btn-primary mb-3">Créer un sondage</a>
-
+<a href="{{ route('survey.create', $organization) }}" class="btn btn-primary mb-3">Créer un sondage</a>
 <table class="table">
     <thead>
         <tr>

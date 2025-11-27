@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,14 +29,21 @@ Route::middleware('auth')->group(function () {
         Route::post('/organizations/switch', 'switch')->name('organizations.switch');
     });
 
-    Route::controller(SurveyController::class)->group(function () {
+    //Route::controller(SurveyController::class)->group(function () {
+    Route::controller('App\Http\Controllers\SurveyController')->group(function () {
         Route::get('/organizations/{organization}/survey', 'survey')->name('survey.index');
         Route::get('/organizations/{organization}/survey/create', 'create')->name('survey.create');
+        
 
         Route::POST('/organizations/{organization}/survey', 'store')->name('survey.store');
+
+
+        Route::get('/surveys/{survey}/edit',  'edit')->name('surveys.edit');
+        Route::patch('/surveys/{survey}', 'update')->name('surveys.update');
+        Route::delete('/surveys/{survey}', 'destroy')->name('surveys.destroy');
         
 
     });
-});
 
 require __DIR__.'/auth.php';
+ });

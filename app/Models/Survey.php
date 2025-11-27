@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // <-- IMPORTANT
 
 class Survey extends Model
 {
@@ -16,6 +17,20 @@ class Survey extends Model
         'title', 'description', 'start_date', 'end_date', 'is_anonymous',
         'created_at', 'updated_at', 'token'
     ];
-    protected $casts = [
-    ];
+
+    /**
+     * Relation : Un sondage appartient à une organisation.
+     */
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    /**
+     * Relation : Un sondage appartient à un créateur (User).
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

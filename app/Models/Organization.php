@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany; 
 
 class Organization extends Model
 {
@@ -33,5 +34,10 @@ class Organization extends Model
         return $this->belongsToMany(User::class, 'organization_user')
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    public function surveys(): HasMany
+    {
+        return $this->hasMany(Survey::class);
     }
 }
