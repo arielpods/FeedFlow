@@ -20,6 +20,7 @@ use App\DTOs\SurveyQuestionDTO;
 use App\Http\Requests\Survey\StoreSurveyAnswerRequest;
 use App\DTOs\SurveyAnswerDTO;
 use App\Actions\Survey\StoreSurveyAnswerAction;
+use Illuminate\Support\Facades\DB;
 
 class SurveyController extends Controller
 {
@@ -146,6 +147,74 @@ class SurveyController extends Controller
         return Redirect::route('surveys.public.thanks');
     }
 
+
+
+
+
+
+    public function results(Survey $survey): View
+    {
+        // Seul le proprio/admin peut voir les résultats
+        $this->authorize('update', $survey);
+
+        // Charger les questions et leurs réponses
+        $survey->load(['questions.answers', 'answers']);
+
+        // --- GRAPHIQUE 1 : Évolution des participations (Timeline) ---
+        // On compte les réponses à la première question comme indicateur de participation
+        $firstQuestionId = $survey->questions->first()?->id;
+        
+        $datesData = [];
+        if ($firstQuestionId) {
+            $datesData = $survey->answers()
+                ->where('survey_question_id', $firstQuestionId)
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+        }
+
+        // --- GRAPHIQUE 2 : Répartition pour une question "Choix" (Radio/Checkbox) ---
+        // On prend la première question de type radio ou checkbox pour l'exemple
+        $chartQuestion = $survey->questions->whereIn('question_type', ['radio', 'checkbox'])->first();
+        $distributionData = [];
+        
+        if ($chartQuestion) {
+            // Initialiser les compteurs à 0 pour chaque option
+            if ($chartQuestion->options) {
+                foreach ($chartQuestion->options as $opt) {
+                    $distributionData[$opt] = 0;
+                }
+            }
+
+            // Compter les réponses
+            foreach ($chartQuestion->answers as $ans) {
+                if ($chartQuestion->question_type === 'checkbox') {
+                    // Les checkbox sont stockées en JSON string, on décode
+                    $choices = json_decode($ans->answer, true);
+                    if (is_array($choices)) {
+                        foreach ($choices as $choice) {
+                            if (isset($distributionData[$choice])) {
+                                $distributionData[$choice]++;
+                            }
+                        }
+                    }
+                } else {
+                    // Radio : string simple
+                    if (isset($distributionData[$ans->answer])) {
+                        $distributionData[$ans->answer]++;
+                    }
+                }
+            }
+        }
+
+        return view('surveys.results', [
+            'survey' => $survey,
+            'datesData' => $datesData,         // Pour le Graphique 1
+            'chartQuestion' => $chartQuestion, // Pour le Graphique 2 (Question)
+            'distributionData' => $distributionData, // Pour le Graphique 2 (Données)
+        ]);
+    }
 
     
 }

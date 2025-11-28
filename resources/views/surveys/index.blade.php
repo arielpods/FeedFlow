@@ -83,6 +83,13 @@
                                                         <button type="submit" class="text-red-600 hover:text-red-900 ml-2">Supprimer</button>
                                                     </form>
                                                 @endcan
+
+
+                                                @can('update', $survey)
+                                                    <a href="{{ route('surveys.results', $survey) }}" class="text-purple-600 hover:text-purple-900 bg-purple-50 px-3 py-1 rounded-md border border-purple-200" title="Voir les statistiques">
+                                                        📊 Résultats
+                                                    </a>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

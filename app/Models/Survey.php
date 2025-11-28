@@ -43,4 +43,13 @@ class Survey extends Model
     {
         return $this->hasMany(SurveyQuestion::class);
     }
+
+
+
+    //la c l'ajoute de la relation answers  pour accéder aux réponses depuis le sondage.
+
+    public function answers(): HasMany
+    {
+        return $this->hasMany(SurveyAnswer::class);
+    }
 }

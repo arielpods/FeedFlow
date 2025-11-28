@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/organizations/switch', 'switch')->name('organizations.switch');
     });
 
-    
+
 
 
     Route::controller('App\Http\Controllers\SurveyController')->group(function () {
@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/surveys/{survey}/questions', 'manageQuestions')->name('surveys.questions.index');
         Route::post('/surveys/{survey}/questions',  'storeQuestion')->name('surveys.questions.store');
         Route::delete('/questions/{question}', 'destroyQuestion')->name('surveys.questions.destroy');
+        Route::get('/surveys/{survey}/results', [\App\Http\Controllers\SurveyController::class, 'results'])->name('surveys.results');
 
 
     });
