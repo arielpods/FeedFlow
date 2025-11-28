@@ -86,7 +86,7 @@ class SurveyController extends Controller
         return Redirect::route('survey.index', $organizationId)->with('status', 'survey-deleted');
     }
 
-    // ... existing code ...
+
     public function index($surveyId)
     {
         $survey = \App\Models\Survey::findOrFail($surveyId);
@@ -103,13 +103,13 @@ class SurveyController extends Controller
         return back()->with('success', 'Question supprimée avec succès.');
     }
 
-// ... existing code ...
+
     public function storeQuestion(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
     {
         $dto = SurveyQuestionDTO::fromRequest($request);
         $question = $action->execute($dto);
 
-        // Utiliser directement la valeur du request au lieu du DTO
+
         return redirect()->route('pages.surveys.index', ['surveyId' => $request->input('survey_id')])
             ->with('success', 'Question ajoutée avec succès !');
     }
