@@ -22,6 +22,9 @@
                     </div>
                 </div>
 
+
+                
+
                 <div class="bg-white p-6 shadow-md rounded-xl border-t-4 border-teal-500">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">
                         Répartition : {{ $chartQuestion ? Str::limit($chartQuestion->title, 30) : 'Aucune question à choix' }}
